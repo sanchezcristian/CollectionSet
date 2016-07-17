@@ -10,10 +10,10 @@ public class Main {
 		
 		Proveedor proveedorA = new Proveedor (1, "ProveedorA");
 		Producto productoA = new Producto(1, "ProductoA");	
-		
+
 		Proveedor proveedorB = new Proveedor (1, "ProveedorB");
 		Producto productoB = new Producto(1, "ProductoB");
-		
+
 		Proveedor proveedorC = new Proveedor (1, "ProveedorC");
 		Producto productoC = new Producto(1, "ProductoC");
 		
@@ -24,13 +24,18 @@ public class Main {
 		relacion.addRelaciones(productoA, proveedorB);
 		relacion.addRelaciones(productoC, proveedorC);
 		relacion.addRelaciones(productoC, proveedorB);
+		relacion.addRelaciones(productoB, null);
 		relacion.addRelaciones(productoB, proveedorA);
 		System.out.println("-----");
 		relacion.printRelaciones();
 		System.out.println("-----");	
-		relacion.removerRelacion(productoA, null);
+		relacion.removerRelacion(productoA, proveedorA);
+		relacion.removerRelacion(productoA, proveedorB);
+
 		System.out.println("-----");
 		relacion.printRelaciones();
+		
+		
 		
 		System.out.println("-----");
 		//relacion.removeRelacion(proveedorA);

@@ -28,13 +28,15 @@ public class Relacion {
 
 	private boolean existeProductoConProveedorNull (Producto producto){
 		/*
-		 * Este metodo devuelve true en caso de que exista la relacion entre los
-		 * parametros. False, caso contrario.
+		 * Este metodo devuelve true en caso de que el producto no tenga proveedor
+		 * False, caso contrario.
 		 */
 		Iterator <Producto> listaIterador = listaProductos.iterator();
+		Producto produc = new Producto(producto.getId(), producto.getNombre());
+		produc.setProveedor(null);
 		while(listaIterador.hasNext()){
 			Producto prod = listaIterador.next();
-			if (prod.equals(producto)) {
+			if (prod.equals(produc)) {
                 if (prod.getProveedor() == null) {
                     return true;
                 }
@@ -112,21 +114,24 @@ public class Relacion {
          */
 		if((producto != null)){
 			if(existeRalacion(producto, proveedor)){
+				Producto produc = new Producto(producto.getId(),producto.getNombre());
+				produc.setProveedor(proveedor);
 				Iterator <Producto> listaIterador = listaProductos.iterator();
 				while(listaIterador.hasNext()){
 					Producto prod = listaIterador.next();
-					if (prod.equals(producto)) {
-		                if (prod.getProveedor().equals(proveedor)) {
-		                		listaIterador.remove();
-		                		if(prod.getProveedor() != null){
-		                			System.out.println("Se elimino la relacion " + prod.getNombre() + " -- " + prod.getProveedor().getNombre());
-		                		} else {System.out.println("Se elimino la relacion " + prod.getNombre() + " -- " + "Sin Proveedor");}
-		                }
+					if (prod.equals(produc)) {
+		                if (!existeProductoConProveedorNull(prod)) {
+		                		prod.setProveedor(null);
+		                		if(produc.getProveedor() != null){
+		                			System.out.println("Se elimino la relacion " + produc.getNombre() + " -- " + produc.getProveedor().getNombre());
+		                		} else {System.out.println("Se elimino la relacion " + produc.getNombre() + " -- " + "Sin Proveedor");}
+		                }else listaIterador.remove();
 					}
 				}
 			}else System.out.println("No existe la relacion.");
 		}else System.out.println("ERROR: Producto Nulo");
 	}
+	
 	
 	public void removeRelacion (Proveedor proveedor){
 		/*

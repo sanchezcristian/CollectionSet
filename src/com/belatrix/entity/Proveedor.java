@@ -18,22 +18,26 @@ public class Proveedor {
 		result = prime * result + ((nombre == null) ? 0 : nombre.hashCode());
 		return result;
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-			if(obj != null){
-				if (getClass() != obj.getClass())
-					return false;
-				Proveedor other = (Proveedor) obj;	
-				if (!nombre.equals(other.nombre))
-					return false;
-		
-		} 
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Proveedor other = (Proveedor) obj;
+		if (nombre == null) {
+			if (other.nombre != null)
+				return false;
+		} else if (!nombre.equals(other.nombre))
+			return false;
 		return true;
 	}
-	
+
+
+
 	public int getId() {
 		return id;
 	}

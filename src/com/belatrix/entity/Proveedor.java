@@ -36,8 +36,6 @@ public class Proveedor {
 		return true;
 	}
 
-
-
 	public int getId() {
 		return id;
 	}

@@ -43,6 +43,12 @@ public class Producto {
 		return true;
 	}
 	
+	public Producto copy(){
+		Producto producto = new Producto(this.id, this.nombre);
+		return producto;
+	}
+
+	
 	public int getId() {
 		return id;
 	}

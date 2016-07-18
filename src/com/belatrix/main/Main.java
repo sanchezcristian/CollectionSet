@@ -26,22 +26,28 @@ public class Main {
 		relacion.addRelaciones(productoC, proveedorB);
 		relacion.addRelaciones(productoB, null);
 		relacion.addRelaciones(productoB, proveedorA);
+		relacion.addRelaciones(productoC, null);
 		System.out.println("-----");
 		relacion.printRelaciones();
 		System.out.println("-----");	
-		relacion.removerRelacion(productoA, proveedorA);
 		relacion.removerRelacion(productoA, proveedorB);
+		System.out.println("-----");
+		relacion.printRelaciones();
+		System.out.println("-----");
+		relacion.removerRelacion(productoA, null);
 
 		System.out.println("-----");
 		relacion.printRelaciones();
 		
-		
-		
 		System.out.println("-----");
-		//relacion.removeRelacion(proveedorA);
+		relacion.removerRelacion(proveedorA);
 		System.out.println("-----");
 		relacion.printRelaciones();
-	
+		System.out.println("-----");
+		relacion.removerRelacion(null);
+		System.out.println("-----");
+		relacion.printRelaciones();
+		
 	}
 
 }

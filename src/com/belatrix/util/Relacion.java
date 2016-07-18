@@ -1,5 +1,6 @@
 package com.belatrix.util;
 
+import java.util.AbstractSet;
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -9,20 +10,18 @@ import com.belatrix.entity.Proveedor;
 
 public class Relacion {
 	
-	private final HashSet<Producto> listaProductos = new HashSet<Producto>();
+	private final AbstractSet<Producto> listProducts = new HashSet<Producto>();
+	private static final String ADD = "agrego";
+	private static final String REMOVE = "elimino";
 	
 	private boolean existeRalacion (Producto producto, Proveedor proveedor){
 		/*
 		 * Este metodo devuelve true en caso de que exista la relacion entre los
 		 * parametros. False, caso contrario.
 		 */
-		Iterator <Producto> listaIterador = listaProductos.iterator();
-		while(listaIterador.hasNext()){
-			Producto prod = listaIterador.next();
-			System.out.println("prod.equals(producto)" + prod.equals(prod));
-			if (prod.equals(prod)) return true;
-		}
-		return false;
+		Producto p = producto.copy();
+		p.setProveedor(proveedor);
+		return (listProducts.contains(p));
 	}
 	
 
@@ -31,18 +30,9 @@ public class Relacion {
 		 * Este metodo devuelve true en caso de que el producto no tenga proveedor
 		 * False, caso contrario.
 		 */
-		Iterator <Producto> listaIterador = listaProductos.iterator();
-		Producto produc = new Producto(producto.getId(), producto.getNombre());
-		produc.setProveedor(null);
-		while(listaIterador.hasNext()){
-			Producto prod = listaIterador.next();
-			if (prod.equals(produc)) {
-                if (prod.getProveedor() == null) {
-                    return true;
-                }
-            }
-		}
-		return false;
+		Producto p = producto.copy();
+		p.setProveedor(null);
+		return (listProducts.contains(p));
 	}
 
 	private boolean existeRelacaionConProveedor (Proveedor proveedor){
@@ -51,12 +41,14 @@ public class Relacion {
 		 * relacion con el proveedor pasado como parametro. False, caso 
 		 * contrario.
 		 */
-		Iterator <Producto> listaIterador = listaProductos.iterator();
+		Iterator <Producto> listaIterador = listProducts.iterator();
 		while(listaIterador.hasNext()){
 			Producto prod = listaIterador.next();
-			if (prod.getProveedor().equals(proveedor)) {
-				return true;
-            }
+			if (prod.getProveedor() != null){
+				if (prod.getProveedor().equals(proveedor)) {
+					return true;
+	            }
+			}else if (proveedor == null) return true;
 		}
 		return false;
 	}
@@ -79,25 +71,12 @@ public class Relacion {
          * 
          */
 		if ((producto != null)){	
-				if (proveedor == null){
-					addProducto(producto);
-		   		}else {
-					if (proveedor != null){
-						Producto p = new Producto(producto.getId() + 1, producto.getNombre());
-		                p.setProveedor(proveedor);
-		                addProducto(p);
-					}
-				}
+			Producto productCopy = producto.copy();
+		    productCopy.setProveedor(proveedor);
+		    if(this.listProducts.add(productCopy)){
+		    	printOperation(productCopy, ADD);
+		    }else System.out.println("Ya existe la relacion");
 		}else System.out.println("No se pudo agregar la relacion ya que el produco esta vacion");
-	}
-	
-	private void addProducto (Producto producto){
-		if (this.listaProductos.add(producto)){
-			if(producto.getProveedor() == null){
-				System.out.println("Se agrego la relacion: " + producto.getNombre() + " -- " + "Sin Proveedor");
-			}else
-				System.out.println("Se agrego la relacion: " + producto.getNombre() + " -- " + producto.getProveedor().getNombre());
-		}else System.out.println("Ya existe la relacion");
 	}
 	
 	public void removerRelacion (Producto producto, Proveedor proveedor){
@@ -114,18 +93,16 @@ public class Relacion {
          */
 		if((producto != null)){
 			if(existeRalacion(producto, proveedor)){
-				Producto produc = new Producto(producto.getId(),producto.getNombre());
-				produc.setProveedor(proveedor);
-				Iterator <Producto> listaIterador = listaProductos.iterator();
+				Producto productCopy = producto.copy();
+				productCopy.setProveedor(proveedor);
+				Iterator <Producto> listaIterador = listProducts.iterator();
 				while(listaIterador.hasNext()){
 					Producto prod = listaIterador.next();
-					if (prod.equals(produc)) {
+					if (prod.equals(productCopy)) {
 		                if (!existeProductoConProveedorNull(prod)) {
-		                		prod.setProveedor(null);
-		                		if(produc.getProveedor() != null){
-		                			System.out.println("Se elimino la relacion " + produc.getNombre() + " -- " + produc.getProveedor().getNombre());
-		                		} else {System.out.println("Se elimino la relacion " + produc.getNombre() + " -- " + "Sin Proveedor");}
+		                		prod.setProveedor(null);         	
 		                }else listaIterador.remove();
+		            	printOperation(productCopy, REMOVE);
 					}
 				}
 			}else System.out.println("No existe la relacion.");
@@ -133,7 +110,7 @@ public class Relacion {
 	}
 	
 	
-	public void removeRelacion (Proveedor proveedor){
+	public void removerRelacion (Proveedor proveedor){
 		/*
 		 * - Chequeo que el parametro no sea nulo:
 		 * 		- En el caso de que no sea nulo, procedo a eliminar las relaciones.
@@ -147,25 +124,54 @@ public class Relacion {
 		 * 		- Si no existe, muestro un mensaje que exponga esta situacion.
          * 
          */
-		if (proveedor != null){
-			if (existeRelacaionConProveedor(proveedor)){
-				Iterator <Producto> listaIterador = listaProductos.iterator();
-				while (listaIterador.hasNext()){
-					Producto prod = listaIterador.next();
-					if(prod.getProveedor().equals(proveedor)){
+		if(existeRelacaionConProveedor(proveedor)){
+			Iterator<Producto> listaIterador = listProducts.iterator();
+			while (listaIterador.hasNext()){
+				Producto prod = listaIterador.next();
+				if(prod.getProveedor() == null){
+					if ((proveedor == null)){
+						printOperation(prod, REMOVE);
 						listaIterador.remove();
+						
+					};
+				}else if(proveedor != null){
+						if (prod.getProveedor().equals(proveedor)) {
+							printOperation(prod, REMOVE);
+			                if (!existeProductoConProveedorNull(prod)) {
+			                		prod.setProveedor(null);         	
+			                }else listaIterador.remove();
+			            	
+						}		
 					}
-				}
-				System.out.println("Se eliminaron las relaciones con el Proveedor: " + proveedor.getNombre());
-			}else System.out.println("No existe nunguna relacion con " + proveedor.getNombre());
-		}else System.out.println("ERROR: Proveedor Nulo");
+			}
+		}
+	}
+	
+	private void printOperation (Producto producto, String operation){
+		if (producto.getProveedor() != null){
+			if (operation.equals(ADD)){
+				System.out.println("Se " + ADD + " la relacion " + producto.getNombre() + " -- " + 
+						producto.getProveedor().getNombre());
+			} else if (operation.equals(REMOVE)){
+				System.out.println("Se " + REMOVE + " la relacion " + producto.getNombre() + " -- " + 
+						producto.getProveedor().getNombre());
+			}
+		}else if (producto.getProveedor() == null){
+			if (operation.equals(ADD)){
+				System.out.println("Se " + ADD + " la relacion " + producto.getNombre() + " -- " + 
+						"Sin Proveedor");
+			} else if (operation.equals(REMOVE)){
+				System.out.println("Se " + REMOVE + " la relacion " + producto.getNombre() + " -- " + 
+						"Sin Proveedor");
+			}
+		}
 	}
 	
 	public void printRelaciones (){
 		/*
 		 * Recorro la lista, mostrando las relaciones.
 		 */
-		  Iterator <Producto> listaIterador = listaProductos.iterator();
+		  Iterator <Producto> listaIterador = listProducts.iterator();
           while(listaIterador.hasNext()){
         	  Producto prod = listaIterador.next();
         	  if (prod.getProveedor() != null){

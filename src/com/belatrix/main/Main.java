@@ -46,8 +46,7 @@ public class Main {
 		System.out.println("-----");
 		relacion.removerRelacion(null);
 		System.out.println("-----");
-		relacion.printRelaciones();
-		
+		relacion.printRelaciones();	
 	}
 
 }

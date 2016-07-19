@@ -1,16 +1,16 @@
 package com.belatrix.util;
 
-import java.util.AbstractSet;
 import java.util.HashSet;
 import java.util.Iterator;
-
+import java.util.Set;
 
 import com.belatrix.entity.Producto;
 import com.belatrix.entity.Proveedor;
 
 public class Relacion {
 	
-	private final AbstractSet<Producto> listProducts = new HashSet<Producto>();
+	private final Set<Producto> listProducts = new HashSet<Producto>();
+	//Constantes usadas para imprimir cuando se agrega o elimina una relacion.
 	private static final String ADD = "agrego";
 	private static final String REMOVE = "elimino";
 	
@@ -56,19 +56,16 @@ public class Relacion {
 	
 	public void addRelaciones (Producto producto, Proveedor proveedor){
 		/*
-		 * - Chequeo que los parametros no sean nulos:
-		 * 		- En el caso de que no sean nulos, procedo a agregar la relacion.
-		 * 		- En el caso de que sean nulos, muestro un mensaje exponiendo 
+		 * - Chequeo que el parametro producto no sea nulo:
+		 * 		- En el caso de que no sea nulo, procedo a agregar la relacion.
+		 * 		- En el caso de que sea nulo, muestro un mensaje exponiendo 
 		 * 		esta situacion.
 		 * 
-		 * - Si el producto no tiene asignado un proveedor entonces le seteo el
-         * proveedor del parametro y muestro mensaje de que se agrego la relacion.
-         * 
-         * - Chequeo en la lista, que no exista la relacion pasada por paramentros:
-         * 		- Si no existe, la agrego y muestro un mesaje de exito.
-         * 		- Si existe la relacion, muestro una mensaje que exponga 
-         * 		esta situacion.
-         * 
+		 * - Relazo una copia del producto pasador por parametro, y le seteo
+		 * a esta copia, el proveedor pasado como parametro.
+		 * -Añado la realacion a la lista:
+		 * 	-Si retorna true, muestro un mensaje exponiendo esta situacion.
+		 * 	-Si retorna false, muestro un mensaje exponiendo esta situacion,
          */
 		if ((producto != null)){	
 			Producto productCopy = producto.copy();
@@ -81,9 +78,9 @@ public class Relacion {
 	
 	public void removerRelacion (Producto producto, Proveedor proveedor){
 		/*
-		 * - Chequeo que los parametros no sean nulos:
-		 * 		- En el caso de que no sean nulos, procedo a eliminar la relacion.
-		 * 		- En el caso de que sean nulos, muestro un mensaje exponiendo 
+		 * - Chequeo que el parametro producto no sea nulo:
+		 * 		- En el caso de que no sea nulo, procedo a eliminar la relacion.
+		 * 		- En el caso de que sea nulo, muestro un mensaje exponiendo 
 		 * 		esta situacion.
 		 * 
 		 * - Chequeo que exista la realacion a borrar
@@ -112,17 +109,19 @@ public class Relacion {
 	
 	public void removerRelacion (Proveedor proveedor){
 		/*
-		 * - Chequeo que el parametro no sea nulo:
-		 * 		- En el caso de que no sea nulo, procedo a eliminar las relaciones.
-		 * 		- En el caso de que sea nulo, muestro un mensaje exponiendo 
-		 * 		esta situacion.
-		 * 
 		 * - Chequeo que exista la realacion a borrar
 		 * 		- Si exista, recorro la lista borrando las relaciones que cumplen
 		 * 		con la condicion de tener como proveedor igual al parametro. Al final 
 		 * 		muestro un mensaje de exito.
 		 * 		- Si no existe, muestro un mensaje que exponga esta situacion.
-         * 
+		 * 
+		 *  -Borro de relaciones:
+		 *  	- Si el parametro pasado es igual a null, elimino las relacciones
+		 *  	con porveedor null.
+		 *  	- Si el parametro es distinto de null, recorro la lista en busca
+		 *  	de las relaciones que existen con el parametro. Si no exite la relacion
+		 *  	del producto con un proveedor null, solo le seteo al producto un 
+		 * 		porveedor null, en caso contrario elimino la relacion.
          */
 		if(existeRelacaionConProveedor(proveedor)){
 			Iterator<Producto> listaIterador = listProducts.iterator();
@@ -131,37 +130,44 @@ public class Relacion {
 				if(prod.getProveedor() == null){
 					if ((proveedor == null)){
 						printOperation(prod, REMOVE);
-						listaIterador.remove();
-						
+						listaIterador.remove();				
 					};
 				}else if(proveedor != null){
 						if (prod.getProveedor().equals(proveedor)) {
 							printOperation(prod, REMOVE);
 			                if (!existeProductoConProveedorNull(prod)) {
 			                		prod.setProveedor(null);         	
-			                }else listaIterador.remove();
-			            	
+			                }else listaIterador.remove();	            	
 						}		
 					}
 			}
-		}
+		}else System.out.print("No existe relacion con el porveedor." );
 	}
 	
 	private void printOperation (Producto producto, String operation){
+		/*
+		 * -Operacion tiene dos valores: agrego, elimino.
+		 * -Imprimo los datos del producto junto a la operacion realizada.
+		 */
+		 
 		if (producto.getProveedor() != null){
 			if (operation.equals(ADD)){
-				System.out.println("Se " + ADD + " la relacion " + producto.getNombre() + " -- " + 
+				System.out.println("Se " + ADD + " la relacion " + 
+						producto.getNombre() + " -- " + 
 						producto.getProveedor().getNombre());
 			} else if (operation.equals(REMOVE)){
-				System.out.println("Se " + REMOVE + " la relacion " + producto.getNombre() + " -- " + 
+				System.out.println("Se " + REMOVE + " la relacion " + 
+						producto.getNombre() + " -- " + 
 						producto.getProveedor().getNombre());
 			}
 		}else if (producto.getProveedor() == null){
 			if (operation.equals(ADD)){
-				System.out.println("Se " + ADD + " la relacion " + producto.getNombre() + " -- " + 
+				System.out.println("Se " + ADD + " la relacion " + 
+						producto.getNombre() + " -- " + 
 						"Sin Proveedor");
 			} else if (operation.equals(REMOVE)){
-				System.out.println("Se " + REMOVE + " la relacion " + producto.getNombre() + " -- " + 
+				System.out.println("Se " + REMOVE + " la relacion " + 
+						producto.getNombre() + " -- " + 
 						"Sin Proveedor");
 			}
 		}
@@ -175,9 +181,11 @@ public class Relacion {
           while(listaIterador.hasNext()){
         	  Producto prod = listaIterador.next();
         	  if (prod.getProveedor() != null){
-        		  System.out.println("Producto: " + prod.getNombre()+ " -- " + "Proveedor: " + prod.getProveedor().getNombre());                    
+        		  System.out.println("Producto: " + prod.getNombre()+ " -- " + 
+        				  "Proveedor: " + prod.getProveedor().getNombre());                    
         	  } else
-              System.out.println("Producto: " + prod.getNombre()+ " -- " + "Proveedor: --- " );                    
+              System.out.println("Producto: " + prod.getNombre()+ " -- " + 
+            		  "Proveedor: Sin Proveedor " );                    
           }
 	}
 
